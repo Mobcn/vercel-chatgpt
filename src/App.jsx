@@ -36,7 +36,7 @@ function App() {
         setMessageList([...newMessageList, { role: 'assistant', content: '' }]);
         sendMessages(newMessageList, keyDom.value.trim(), (part) => {
             const messageList = [...getMessageList()];
-            messageList[messageList.length - 1].content += part;
+            messageList.push({ role: 'assistant', content: messageList.pop().content + part });
             setMessageList(messageList);
         });
     };

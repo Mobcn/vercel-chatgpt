@@ -34,13 +34,12 @@ export const sendMessages = async (messages, apiKey, callback) => {
             break;
         }
         if (value) {
-            const char = decoder.decode(value);
-            if (char === '\n' && result.endsWith('\n')) {
+            const part = decoder.decode(value);
+            if (part === '\n' && result.endsWith('\n')) {
                 continue;
             }
-            if (char) {
-                result += char;
-                callback(char);
+            if (part) {
+                callback(part);
             }
         }
     }
