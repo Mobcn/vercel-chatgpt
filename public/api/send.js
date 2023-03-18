@@ -5,7 +5,7 @@ import { createParser } from 'eventsource-parser';
  * @param {VercelResponse} res Vercel响应对象
  */
 export default async (req, res) => {
-    const apiKey = req.query['key'];
+    const { messages, apiKey } = req.body;
     if (!apiKey) {
         res.send('没有apiKey！');
         return;
@@ -18,7 +18,7 @@ export default async (req, res) => {
         method: 'POST',
         body: JSON.stringify({
             model: 'gpt-3.5-turbo',
-            messages: [{ role: 'user', content: '你好' }],
+            messages,
             temperature: 0.6,
             stream: true
         })
