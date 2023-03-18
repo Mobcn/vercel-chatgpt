@@ -1,7 +1,8 @@
 function App() {
     return (
         <div>
-            <img src="../public/vite.svg" />
+            <img src="/vite.svg" />
+            <span>Hello</span>
         </div>
     );
 }
