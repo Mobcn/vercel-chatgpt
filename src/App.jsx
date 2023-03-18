@@ -13,10 +13,7 @@ import './assets/tailwindcss.css';
  */
 function App() {
     /** @type {[() => ChatMessage[], (newMessageList: ChatMessage[]) => void]} */
-    const [getMessageList, setMessageList] = createSignal([
-        { role: 'user', content: '你好' },
-        { role: 'assistant', content: '你好啊' }
-    ]);
+    const [getMessageList, setMessageList] = createSignal([]);
 
     /** Key元素 */
     let keyDom;
