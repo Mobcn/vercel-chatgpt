@@ -6,9 +6,9 @@ const url = '/api/send';
  *
  * @param {{role: 'user' | 'assistant', content: string}[]} messages 消息列表
  * @param {string} apiKey API令牌
- * @param {(part: string) => void} callback 消息回调
+ * @returns {Promise<{role: 'assistant', content: string}>} 响应消息
  */
-export const sendMessages = async (messages, apiKey, callback) => {
+export const sendMessages = async (messages, apiKey) => {
     const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -17,30 +17,12 @@ export const sendMessages = async (messages, apiKey, callback) => {
         body: JSON.stringify({ messages, apiKey })
     });
     if (!response.ok) {
-        const error = await response.json();
-        console.error(error.error);
         throw new Error('请求失败！');
     }
-    const data = response.body;
-    if (!data) {
-        throw new Error('没有数据！');
+    const res = await response.json();
+    if (res.code !== 0) {
+        console.log(res.data.errorMessage);
+        throw new Error('服务器错误！');
     }
-    const reader = data.getReader();
-    const decoder = new TextDecoder('utf-8');
-    let result = '';
-    while (true) {
-        const { value, done } = await reader.read();
-        if (done) {
-            break;
-        }
-        if (value) {
-            const part = decoder.decode(value);
-            if (part === '\n' && result.endsWith('\n')) {
-                continue;
-            }
-            if (part) {
-                callback(part);
-            }
-        }
-    }
+    return res.data.message;
 };

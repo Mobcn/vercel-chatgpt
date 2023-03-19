@@ -23,7 +23,7 @@ function App() {
     /**
      * 发送消息
      */
-    const handleSendMessages = (event) => {
+    const handleSendMessages = async (event) => {
         if (event.keyCode !== 13) {
             return;
         }
@@ -33,12 +33,8 @@ function App() {
             return;
         }
         const newMessageList = [...getMessageList(), { role: 'user', content }];
-        setMessageList([...newMessageList, { role: 'assistant', content: '' }]);
-        sendMessages(newMessageList, keyDom.value.trim(), (part) => {
-            const messageList = [...getMessageList()];
-            messageList.push({ role: 'assistant', content: messageList.pop().content + part });
-            setMessageList(messageList);
-        });
+        const resultMessage = await sendMessages(newMessageList, keyDom.value.trim());
+        setMessageList([...newMessageList, resultMessage]);
     };
 
     return (
