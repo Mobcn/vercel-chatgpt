@@ -60,7 +60,7 @@ export default async (req, res) => {
         for await (const chunk of rawResponse.body) {
             const sr = decoder.decode(chunk);
             result.data.test.push(sr);
-            parser.feed(decoder.decode(sr));
+            parser.feed(sr);
         }
     } catch (err) {
         res.json({
