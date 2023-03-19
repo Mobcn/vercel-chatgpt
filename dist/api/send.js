@@ -23,7 +23,8 @@ export default async (req, res) => {
             body: JSON.stringify({
                 model: MODEL,
                 messages,
-                temperature: TEMPERATURE
+                temperature: TEMPERATURE,
+                stream: true
             })
         };
         const result = {
