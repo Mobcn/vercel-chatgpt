@@ -1,3 +1,5 @@
+import { createParser } from 'eventsource-parser';
+
 const CHAT_API = 'https://api.openai.com/v1/chat/completions';
 const MODEL = 'gpt-3.5-turbo';
 const TEMPERATURE = 0.7;
@@ -24,22 +26,39 @@ export default async (req, res) => {
                 temperature: TEMPERATURE
             })
         };
+        const result = {
+            code: 1,
+            message: '未完成',
+            data: {
+                message: { role: 'assistant', content: '' }
+            }
+        };
+        const timer = setTimeout(() => res.json(result), 9000);
         /** @type {Response} */
         const rawResponse = await fetch(CHAT_API, initOptions);
         if (!rawResponse.ok) {
             throw new Error('请求失败！');
         }
-        const data = await rawResponse.json();
-        if (!data) {
-            throw new Error('没有返回数据！');
-        }
-        res.json({
-            code: 0,
-            message: '成功',
-            data: {
-                message: data.choices[0].message
+        const decoder = new TextDecoder('utf-8');
+        res.setHeader('Content-type', 'application/octet-stream');
+        const parser = createParser((event) => {
+            if (event.type === 'event') {
+                const data = event.data;
+                if (data === '[DONE]') {
+                    clearTimeout(timer);
+                    result.code = 0;
+                    result.message = '成功';
+                    res.json(result);
+                } else {
+                    const json = JSON.parse(data);
+                    const text = json.choices[0].delta?.content || '';
+                    result.data.message.content += text;
+                }
             }
         });
+        for await (const chunk of rawResponse.body) {
+            parser.feed(decoder.decode(chunk));
+        }
     } catch (err) {
         res.json({
             code: -1,
