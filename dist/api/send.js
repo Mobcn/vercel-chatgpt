@@ -1,4 +1,6 @@
-import { createParser } from 'eventsource-parser';
+const CHAT_API = 'https://api.openai.com/v1/chat/completions';
+const MODEL = 'gpt-3.5-turbo';
+const TEMPERATURE = 0.7;
 
 /**
  * @param {VercelRequest} req Vercel请求对象
@@ -17,36 +19,18 @@ export default async (req, res) => {
         },
         method: 'POST',
         body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
+            model: MODEL,
             messages,
-            temperature: 0.6,
-            stream: true
+            temperature: TEMPERATURE
         })
     };
     try {
         /** @type {Response} */
-        const rawResponse = await fetch('https://api.openai.com/v1/chat/completions', initOptions);
+        const rawResponse = await fetch(CHAT_API, initOptions);
         if (!rawResponse.ok) {
-            res.send('请求失败！');
+            throw new Error('请求失败！');
         }
-        const encoder = new TextEncoder();
-        const decoder = new TextDecoder();
-        res.setHeader('Content-type', 'application/octet-stream');
-        const parser = createParser((event) => {
-            if (event.type === 'event') {
-                const data = event.data;
-                if (data === '[DONE]') {
-                    res.end();
-                } else {
-                    const json = JSON.parse(data);
-                    const text = json.choices[0].delta?.content || '';
-                    res.write(encoder.encode(text));
-                }
-            }
-        });
-        for await (const chunk of rawResponse.body) {
-            parser.feed(decoder.decode(chunk));
-        }
+        res.json(await rawResponse.json());
     } catch (err) {
         res.send(`code: ${err.name}, message: ${err.message}`);
     }
