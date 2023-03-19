@@ -7,32 +7,50 @@ const TEMPERATURE = 0.7;
  * @param {VercelResponse} res Vercel响应对象
  */
 export default async (req, res) => {
-    const { messages, apiKey } = req.body;
-    if (!apiKey) {
-        res.send('没有apiKey！');
-        return;
-    }
-    const initOptions = {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${apiKey}`
-        },
-        method: 'POST',
-        body: JSON.stringify({
-            model: MODEL,
-            messages,
-            temperature: TEMPERATURE
-        })
-    };
     try {
+        const { messages, apiKey } = req.body;
+        if (!apiKey) {
+            throw new Error('没有apiKey！');
+        }
+        const initOptions = {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${apiKey}`
+            },
+            method: 'POST',
+            body: JSON.stringify({
+                model: MODEL,
+                messages,
+                temperature: TEMPERATURE
+            })
+        };
         /** @type {Response} */
         const rawResponse = await fetch(CHAT_API, initOptions);
         if (!rawResponse.ok) {
             throw new Error('请求失败！');
         }
-        res.json(await rawResponse.json());
+        const data = await rawResponse.json();
+        if (!data) {
+            throw new Error('没有返回数据！');
+        }
+        res.json({
+            code: 0,
+            message: '成功',
+            data: {
+                message: data.choices[0].message
+            }
+        });
     } catch (err) {
-        res.send(`code: ${err.name}, message: ${err.message}`);
+        res.json({
+            code: -1,
+            message: '错误',
+            data: {
+                errorMessage: {
+                    code: err.name,
+                    message: err.message
+                }
+            }
+        });
     }
 };
 
