@@ -33,6 +33,7 @@ function App() {
             return;
         }
         const newMessageList = [...getMessageList(), { role: 'user', content }];
+        setMessageList(newMessageList);
         const resultMessage = await sendMessages(newMessageList, keyDom.value.trim());
         setMessageList([...newMessageList, resultMessage]);
     };
