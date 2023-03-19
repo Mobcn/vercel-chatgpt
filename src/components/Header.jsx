@@ -3,7 +3,7 @@ import { onMount } from 'solid-js';
 /**
  * 头部
  *
- * @param {{ setKey: () => void }} props 参数
+ * @param {{ setRemember: (isRemember: boolean) => void; setKey: (key: string) => void }} props 参数
  */
 function Header(props) {
     /** key 输入框 DOM 元素 */
@@ -49,6 +49,14 @@ function Header(props) {
                 <a className="btn btn-ghost normal-case text-xl" href="/">
                     ChatGPT
                 </a>
+            </div>
+            <div className="flex-none mr-2 px-2 border border-blue-400 rounded-md h-8">
+                <span className="pr-2">连续对话</span>
+                <input
+                    className="toggle toggle-sm toggle-info"
+                    type="checkbox"
+                    onChange={(e) => props.setRemember(e.target.checked)}
+                />
             </div>
             <div className="flex-none">
                 <input

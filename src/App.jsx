@@ -16,6 +16,9 @@ function App() {
     /** @type {[() => ChatMessage[], (newMessageList: ChatMessage[]) => void]} */
     const [getMessageList, setMessageList] = createSignal([]);
 
+    // 是否连续对话
+    const [getRemember, setRemember] = createSignal(false);
+
     // apiKey
     const [getKey, setKey] = createSignal('');
 
@@ -43,7 +46,8 @@ function App() {
             callback();
             return;
         }
-        const newMessageList = [...getMessageList(), { role: 'user', content }];
+        const message = { role: 'user', content };
+        const newMessageList = [...getMessageList(), message];
         setMessageList(newMessageList);
         bodyExpose.toDown();
         const result = { role: 'assistant', content: '' };
@@ -79,14 +83,15 @@ function App() {
                 }, 40);
             }
         };
-        sendMessages(newMessageList, apiKey, (part, isFinish) => reader.add(part, isFinish));
+        const sendMessageList = getRemember() ? newMessageList : [message];
+        sendMessages(sendMessageList, apiKey, (part, isFinish) => reader.add(part, isFinish));
         reader.start();
     };
 
     return (
         <div className="h-screen box-border bg-blue-50">
             <div className="flex flex-col items-start w-full max-w-3xl h-full mx-auto pb-1 bg-white">
-                <Header setKey={setKey} />
+                <Header setRemember={setRemember} setKey={setKey} />
                 <Body messages={getMessageList()} expose={bodyExpose} />
                 <Footer onSendMessages={handleSendMessages} />
             </div>
