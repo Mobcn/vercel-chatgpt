@@ -27,17 +27,15 @@ export default async (req, res) => {
                 stream: true
             })
         };
-        // const result = {
-        //     code: 1,
-        //     message: '未完成',
-        //     data: {
-        //         message: { role: 'assistant', content: '' },
-        //         test: []
-        //     }
-        // };
-        // const timer = setTimeout(() => res.json(result), 9000);
-        res.setHeader('Content-Type', 'text/event-stream');
-        const timer = setTimeout(() => res.end(), 9000);
+        const result = {
+            code: 1,
+            message: '未完成',
+            data: {
+                message: { role: 'assistant', content: '' },
+                test: []
+            }
+        };
+        const timer = setTimeout(() => res.json(result), 9000);
         /** @type {Response} */
         const rawResponse = await fetch(CHAT_API, initOptions);
         if (!rawResponse.ok) {
@@ -49,15 +47,13 @@ export default async (req, res) => {
                 const data = event.data;
                 if (data === '[DONE]') {
                     clearTimeout(timer);
-                    // result.code = 0;
-                    // result.message = '成功';
-                    // res.json(result);
-                    res.end();
+                    result.code = 0;
+                    result.message = '成功';
+                    res.json(result);
                 } else {
                     const json = JSON.parse(data);
                     const text = json.choices[0].delta?.content || '';
-                    // result.data.message.content += text;
-                    res.write(text);
+                    result.data.message.content += text;
                 }
             }
         });
