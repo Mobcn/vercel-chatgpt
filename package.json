@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "daisyui": "^2.51.4",
     "eventsource-parser": "^0.1.0",
     "solid-js": "^1.6.15"
   },
