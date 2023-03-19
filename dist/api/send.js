@@ -26,7 +26,13 @@ export default async (req, res) => {
         const result = { code: 1, message: '未完成', data: { message: { role: 'assistant', content: '' } } };
 
         // 设置计时器超时中止
-        const timer = setTimeout(() => res.json(result), 9000);
+        let isFinish = false;
+        const timer = setTimeout(() => {
+            if (!isFinish) {
+                isFinish = true;
+                res.json(result);
+            }
+        }, 9000);
 
         /** @type {Response} */
         const rawResponse = await fetch(CHAT_API, generateOptions(messages, apiKey));
@@ -40,10 +46,13 @@ export default async (req, res) => {
             if (event.type === 'event') {
                 const data = event.data;
                 if (data === '[DONE]') {
-                    clearTimeout(timer);
-                    result.code = 0;
-                    result.message = '成功';
-                    res.json(result);
+                    if (!isFinish) {
+                        isFinish = true;
+                        clearTimeout(timer);
+                        result.code = 0;
+                        result.message = '成功';
+                        res.json(result);
+                    }
                 } else {
                     const json = JSON.parse(data);
                     const text = json.choices[0].delta?.content || '';
