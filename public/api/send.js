@@ -1,3 +1,5 @@
+import { createParser } from 'eventsource-parser';
+
 const CHAT_API = 'https://api.openai.com/v1/chat/completions';
 const MODEL = 'gpt-3.5-turbo';
 const TEMPERATURE = 0.7;
@@ -29,6 +31,24 @@ export default async (req, res) => {
         if (!rawResponse.ok) {
             throw new Error('请求失败！');
         }
+        // const encoder = new TextEncoder();
+        // const decoder = new TextDecoder();
+        // res.setHeader('Content-type', 'application/octet-stream');
+        // const parser = createParser((event) => {
+        //     if (event.type === 'event') {
+        //         const data = event.data;
+        //         if (data === '[DONE]') {
+        //             res.end();
+        //         } else {
+        //             const json = JSON.parse(data);
+        //             const text = json.choices[0].delta?.content || '';
+        //             res.write(encoder.encode(text));
+        //         }
+        //     }
+        // });
+        // for await (const chunk of rawResponse.body) {
+        //     parser.feed(decoder.decode(chunk));
+        // }
         const data = await rawResponse.json();
         if (!data) {
             throw new Error('没有返回数据！');
