@@ -31,7 +31,8 @@ export default async (req, res) => {
             code: 1,
             message: '未完成',
             data: {
-                message: { role: 'assistant', content: '' }
+                message: { role: 'assistant', content: '' },
+                test: []
             }
         };
         const timer = setTimeout(() => res.json(result), 9000);
@@ -41,7 +42,6 @@ export default async (req, res) => {
             throw new Error('请求失败！');
         }
         const decoder = new TextDecoder('utf-8');
-        res.setHeader('Content-type', 'application/octet-stream');
         const parser = createParser((event) => {
             if (event.type === 'event') {
                 const data = event.data;
@@ -58,7 +58,9 @@ export default async (req, res) => {
             }
         });
         for await (const chunk of rawResponse.body) {
-            parser.feed(decoder.decode(chunk));
+            const sr = decoder.decode(chunk);
+            result.data.test.push(sr);
+            parser.feed(decoder.decode(sr));
         }
     } catch (err) {
         res.json({
