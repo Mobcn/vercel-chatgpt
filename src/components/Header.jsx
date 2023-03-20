@@ -63,7 +63,7 @@ function Header(props) {
                     </button>
                 </div>
             </div>
-            <dialog className="p-0 bg-transparent" open={getOpen()}>
+            <dialog className="p-0 bg-transparent z-50" open={getOpen()}>
                 <div
                     className="flex items-center justify-center w-screen h-screen bg-black bg-opacity-50"
                     onClick={(e) => e.target.parentNode.tagName === 'DIALOG' && setOpen(false)}
