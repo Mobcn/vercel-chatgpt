@@ -16,7 +16,7 @@ function ChatBubble(props) {
         <div className={'chat items-end ' + (props.role === 'user' ? 'chat-end' : 'chat-start')}>
             {props.role === 'assistant' && <Avatar role="assistant" />}
             <div className={'chat-bubble ' + (props.role === 'user' ? 'chat-bubble-info' : 'chat-bubble-accent')}>
-                <For each={props.content.split('\n')}>{(item) => <p>{item}</p>}</For>
+                <For each={props.content.split('\n')}>{(item) => (item === '' ? <br /> : <p>{item}</p>)}</For>
             </div>
             {props.role === 'user' && <Avatar role="user" />}
         </div>
