@@ -54,7 +54,7 @@ function App() {
         const sendMessageList = getRemember() ? newMessageList : [message];
         sendMessages(sendMessageList, apiKey, (part, isFinish) => {
             if (part !== '') {
-                result.content += part;
+                result.content += part === ' ' ? '\u00A0' : part;
                 setMessageList([...newMessageList, Object.assign({}, result)]);
                 bodyExpose.toDown();
             }
