@@ -9,31 +9,6 @@ import './assets/tailwindcss.css';
  * @typedef {import("./components/UI/ChatBubble").ChatMessage} ChatMessage
  */
 
-const srcH = `
-
-以下是使用Java编写阶乘方法的示例：
-
-\`\`\`java
-public class FactorialExample {
-
-    public static void main(String[] args) {
-        int n = 5;
-        long result = factorial(n);
-        System.out.println(n + "! = " + result);
-    }
-
-    public static long factorial(int n) {
-        if (n == 0) {
-            return 1;
-        } else {
-            return n * factorial(n - 1);
-        }
-    }
-}
-\`\`\`
-
-并将结果打印到控制台上。`;
-
 /**
  * 应用
  */
