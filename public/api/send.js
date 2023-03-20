@@ -7,14 +7,20 @@ const MODEL = 'gpt-3.5-turbo';
 /** 思维发散度（0 ~ 2） */
 const TEMPERATURE = 0.7;
 
+// 使用 Edge Function
+export const config = {
+    runtime: 'edge',
+    regions: ['iad1']
+};
+
 /**
- * @param {VercelRequest} req Vercel请求对象
- * @param {VercelResponse} res Vercel响应对象
+ * @param {Request} req 请求对象
+ * @returns {Response} 响应对象
  */
-export default async (req, res) => {
+export default async (req) => {
     try {
         /** @type {{ messages: ChatMessage[], apiKey: string }} */
-        const { messages, apiKey } = req.body;
+        const { messages, apiKey } = await req.json();
         if (!apiKey) {
             throw new Error('没有apiKey！');
         }
@@ -22,51 +28,50 @@ export default async (req, res) => {
             throw new Error('没有请求内容！');
         }
 
-        /** @type {Result} */
-        const result = { code: 1, message: '未完成', data: { message: { role: 'assistant', content: '' } } };
-
-        // 设置计时器超时中止
-        let isFinish = false;
-        const timer = setTimeout(() => {
-            if (!isFinish) {
-                isFinish = true;
-                res.json(result);
-            }
-        }, 9000);
-
         /** @type {Response} */
         const rawResponse = await fetch(CHAT_API, generateOptions(messages, apiKey));
         if (!rawResponse.ok) {
             throw new Error('请求失败！');
         }
 
-        // 解析流
+        // 获取并解析流
+        const encoder = new TextEncoder();
         const decoder = new TextDecoder('utf-8');
-        const parser = createParser((event) => {
-            if (event.type === 'event') {
-                const data = event.data;
-                if (data === '[DONE]') {
-                    if (!isFinish) {
-                        isFinish = true;
-                        clearTimeout(timer);
-                        result.code = 0;
-                        result.message = '成功';
-                        res.json(result);
+        const stream = new ReadableStream({
+            async start(controller) {
+                const parser = createParser((event) => {
+                    if (event.type === 'event') {
+                        const data = event.data;
+                        if (data === '[DONE]') {
+                            controller.close();
+                            return;
+                        }
+                        try {
+                            const json = JSON.parse(data);
+                            const text = json.choices[0].delta?.content;
+                            const queue = encoder.encode(text);
+                            controller.enqueue(queue);
+                        } catch (e) {
+                            controller.error(e);
+                        }
                     }
-                } else {
-                    const json = JSON.parse(data);
-                    const text = json.choices[0].delta?.content || '';
-                    result.data.message.content += text;
+                });
+                for await (const chunk of rawResponse.body) {
+                    parser.feed(decoder.decode(chunk));
                 }
             }
         });
 
-        // 获取流
-        for await (const chunk of rawResponse.body) {
-            parser.feed(decoder.decode(chunk));
-        }
+        return new Response(stream);
     } catch (err) {
-        res.json({ code: -1, message: '错误', data: { errorMessage: { code: err.name, message: err.message } } });
+        return new Response(
+            JSON.stringify({
+                code: -1,
+                message: '错误',
+                data: { errorMessage: { code: err.name, message: err.message } }
+            }),
+            { status: 200 }
+        );
     }
 };
 
@@ -91,21 +96,6 @@ function generateOptions(messages, apiKey) {
         })
     };
 }
-
-/**
- * @typedef {Object} VercelRequest Vercel请求对象
- * @property {{ [key: string]: string | string[] }} query 请求参数
- * @property {{ [key: string]: string }} cookies 请求Cookie
- * @property {any} body 请求体
- */
-
-/**
- * @typedef {Object} VercelResponse Vercel响应对象
- * @property {(body: any) => VercelResponse} send 响应发送
- * @property {(jsonBody: any) => VercelResponse} json JSON格式响应发送
- * @property {(statusCode: number) => VercelResponse} status 响应状态码
- * @property {(statusOrUrl: string | number, url?: string) => VercelResponse} redirect 重定向
- */
 
 /**
  * @typedef {Object} Result 返回体
