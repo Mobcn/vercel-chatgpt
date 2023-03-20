@@ -27,7 +27,7 @@ export const sendMessages = async (messages, apiKey, callback) => {
     const decoder = new TextDecoder('utf-8');
     while (true) {
         const { value, done } = await reader.read();
-        callback(decoder.decode(value || ''), done);
+        callback(decoder.decode(value), done);
         if (done) {
             break;
         }

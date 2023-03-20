@@ -53,10 +53,15 @@ function App() {
         const result = { role: 'assistant', content: '' };
         const sendMessageList = getRemember() ? newMessageList : [message];
         sendMessages(sendMessageList, apiKey, (part, isFinish) => {
-            result.content += part;
-            setMessageList([...newMessageList, Object.assign({}, result)]);
-            bodyExpose.toDown();
+            if (part !== '') {
+                result.content += part;
+                setMessageList([...newMessageList, Object.assign({}, result)]);
+                bodyExpose.toDown();
+            }
             isFinish && callback();
+        }).catch((err) => {
+            console.error(err);
+            callback();
         });
     };
 

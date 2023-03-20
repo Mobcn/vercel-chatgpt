@@ -64,14 +64,7 @@ export default async (req) => {
 
         return new Response(stream);
     } catch (err) {
-        return new Response(
-            JSON.stringify({
-                code: -1,
-                message: '错误',
-                data: { errorMessage: { code: err.name, message: err.message } }
-            }),
-            { status: 200 }
-        );
+        return new Response(JSON.stringify({ error: { code: err.name, message: err.message } }), { status: 500 });
     }
 };
 
