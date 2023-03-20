@@ -51,41 +51,13 @@ function App() {
         setMessageList(newMessageList);
         bodyExpose.toDown();
         const result = { role: 'assistant', content: '' };
-        const reader = {
-            isFinish: false,
-            /** @type {string[]} */
-            buffer: [],
-            /**
-             * @param {string} part
-             * @param {boolean} isFinish
-             */
-            add: function (part, isFinish) {
-                const chars = [...part];
-                if (result.content === '' && this.buffer.length === 0) {
-                    while (chars.length > 0 && chars[0] === '\n') {
-                        chars.shift();
-                    }
-                }
-                this.buffer.push(...chars);
-                this.isFinish = isFinish;
-            },
-            start: function () {
-                const timer = setInterval(() => {
-                    if (this.isFinish && this.buffer.length === 0) {
-                        clearInterval(timer);
-                        callback();
-                    }
-                    if (this.buffer.length > 0) {
-                        result.content += this.buffer.shift();
-                        setMessageList([...newMessageList, Object.assign({}, result)]);
-                        bodyExpose.toDown();
-                    }
-                }, 40);
-            }
-        };
         const sendMessageList = getRemember() ? newMessageList : [message];
-        sendMessages(sendMessageList, apiKey, (part, isFinish) => reader.add(part, isFinish));
-        reader.start();
+        sendMessages(sendMessageList, apiKey, (part, isFinish) => {
+            result.content += part;
+            setMessageList([...newMessageList, Object.assign({}, result)]);
+            bodyExpose.toDown();
+            isFinish && callback();
+        });
     };
 
     return (
