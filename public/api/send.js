@@ -1,4 +1,4 @@
-import { createParser } from 'eventsource-parser';
+import { createParser } from '../utils/eventsource-parser@0.1.0.js';
 
 /** ChatGPT接口地址 */
 const CHAT_API = 'https://api.openai.com/v1/chat/completions';
