@@ -1,10 +1,25 @@
-import { For } from 'solid-js';
+import { createEffect } from 'solid-js';
+import { marked } from 'marked';
+import hljs from 'highlight.js';
 
 /**
- * @typedef {Object} ChatMessage Chat消息
- * @property {'user' | 'assistant'} role 角色
- * @property {string} content 内容
+ * highlight渲染
  */
+class HljsRenderer extends marked.Renderer {
+    code(code, language, isEscaped) {
+        /** @type {string} */
+        let result = super.code.call(this, code, language, isEscaped);
+        return (
+            result.substring(0, 4) + ' class="hljs" style="padding: 12px; border-radius: 4px;"' + result.substring(4)
+        );
+    }
+}
+
+// markdown解析设置
+marked.setOptions({
+    renderer: new HljsRenderer(),
+    highlight: (code) => hljs.highlightAuto(code).value
+});
 
 /**
  * 聊天气泡
@@ -12,12 +27,18 @@ import { For } from 'solid-js';
  * @param {ChatMessage} props 参数
  */
 function ChatBubble(props) {
+    // 内容DOM元素
+    let contentDOM;
+    createEffect(() => {
+        marked.parse(props.content, (err, res) => (contentDOM.innerHTML = err || res));
+    });
     return (
         <div className={'chat items-end ' + (props.role === 'user' ? 'chat-end' : 'chat-start')}>
             {props.role === 'assistant' && <Avatar role="assistant" />}
-            <div className={'chat-bubble ' + (props.role === 'user' ? 'chat-bubble-info' : 'chat-bubble-accent')}>
-                <For each={props.content.split('\n')}>{(item) => (item === '' ? <br /> : <p>{item}</p>)}</For>
-            </div>
+            <div
+                ref={contentDOM}
+                className={'chat-bubble ' + (props.role === 'user' ? 'chat-bubble-info' : 'chat-bubble-accent')}
+            ></div>
             {props.role === 'user' && <Avatar role="user" />}
         </div>
     );
@@ -66,3 +87,9 @@ function Avatar(props) {
 }
 
 export default ChatBubble;
+
+/**
+ * @typedef {Object} ChatMessage Chat消息
+ * @property {'user' | 'assistant'} role 角色
+ * @property {string} content 内容
+ */
