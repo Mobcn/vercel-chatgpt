@@ -13,6 +13,20 @@ class HljsRenderer extends marked.Renderer {
             result.substring(0, 4) + ' class="hljs" style="padding: 12px; border-radius: 4px;"' + result.substring(4)
         );
     }
+
+    text(text) {
+        if (text.startsWith('```')) {
+            text = text.substring(text.indexOf('\n') + 1);
+            text = text.replace(/&amp;/g, '&');
+            text = text.replace(/&lt;/g, '<');
+            text = text.replace(/&gt;/g, '>');
+            text = text.replace(/&nbsp;/g, ' ');
+            text = text.replace(/'/g, "'");
+            text = text.replace(/&quot;/g, '"');
+            return this.code(text, undefined, true);
+        }
+        return text;
+    }
 }
 
 // markdown解析设置

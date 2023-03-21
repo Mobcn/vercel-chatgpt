@@ -12,7 +12,7 @@ export default defineConfig({
                 {
                     name: 'highlight.js',
                     var: 'hljs',
-                    path: 'https://cdn.staticfile.org/highlight.js/11.7.0/es/highlight.min.js',
+                    path: 'https://cdn.staticfile.org/highlight.js/11.7.0/highlight.min.js',
                     css: 'https://cdn.staticfile.org/highlight.js/11.7.0/styles/atom-one-dark.min.css'
                 }
             ]

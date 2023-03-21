@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "daisyui": "^2.51.4",
-    "eventsource-parser": "^0.1.0",
     "highlight.js": "^11.7.0",
     "marked": "^4.2.12",
     "solid-js": "^1.6.15"
