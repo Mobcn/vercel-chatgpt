@@ -20,18 +20,18 @@ class HljsRenderer extends marked.Renderer {
     /**
      * @param {string} text
      */
-    paragraph(text) {
-        if (text.startsWith('```')) {
-            return this.resolveCodeBlock(text);
-        }
-        text = text.replace(/ /g, `\u00A0`);
-        const rows = text.split('\n');
-        let result = '';
-        for (const row of rows) {
-            result += row !== '' ? `<p class="break-words">${row}</p>` : `<br />`;
-        }
-        return result;
-    }
+    // paragraph(text) {
+    //     if (text.startsWith('```')) {
+    //         return this.resolveCodeBlock(text);
+    //     }
+    //     text = text.replace(/ /g, `\u00A0`);
+    //     const rows = text.split('\n');
+    //     let result = '';
+    //     for (const row of rows) {
+    //         result += row !== '' ? `<p class="break-words">${row}</p>` : `<br />`;
+    //     }
+    //     return result;
+    // }
 
     /**
      * @param {string} text
