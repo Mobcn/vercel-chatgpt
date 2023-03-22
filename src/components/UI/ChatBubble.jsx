@@ -16,6 +16,13 @@ class HljsRenderer extends marked.Renderer {
         let result = super.code.call(this, code, language, isEscaped);
         return result.substring(0, 4) + ' class="hljs p-3 rounded overflow-x-auto"' + result.substring(4);
     }
+
+    /**
+     * @param {string} text
+     */
+    paragraph(text) {
+        return `<p>${text.replace(/ /g, `\u00A0`)}</p>`;
+    }
 }
 
 // markdown解析设置
