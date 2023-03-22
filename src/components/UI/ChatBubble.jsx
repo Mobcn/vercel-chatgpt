@@ -6,16 +6,33 @@ import hljs from 'highlight.js';
  * highlight渲染
  */
 class HljsRenderer extends marked.Renderer {
+    /**
+     * @param {string} code
+     * @param {string} language
+     * @param {boolean} isEscaped
+     */
     code(code, language, isEscaped) {
         /** @type {string} */
         let result = super.code.call(this, code, language, isEscaped);
         return result.substring(0, 4) + ' class="hljs p-3 rounded overflow-x-auto"' + result.substring(4);
     }
 
+    /**
+     * @param {string} text
+     */
     paragraph(text) {
-        return `<pre class="hljs p-3 rounded overflow-x-auto">${text}</pre>`;
+        text = text.replace(/ /g, `\u00A0`);
+        const rows = text.split('\n');
+        let result = '';
+        for (const row of rows) {
+            result += row !== '' ? `<p>${row}</p>` : `<br />`;
+        }
+        return result;
     }
 
+    /**
+     * @param {string} text
+     */
     text(text) {
         if (text.startsWith('```')) {
             text = text.substring(text.indexOf('\n') + 1);
