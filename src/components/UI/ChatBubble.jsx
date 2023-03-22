@@ -20,9 +20,9 @@ class HljsRenderer extends marked.Renderer {
     /**
      * @param {string} text
      */
-    paragraph(text) {
-        return `<p>${text.replace(/ /g, `\u00A0`)}</p>`;
-    }
+    // paragraph(text) {
+    //     return `<p>${text.replace(/ /g, `\u00A0`)}</p>`;
+    // }
 }
 
 // markdown解析设置
