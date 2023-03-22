@@ -16,49 +16,13 @@ class HljsRenderer extends marked.Renderer {
         let result = super.code.call(this, code, language, isEscaped);
         return result.substring(0, 4) + ' class="hljs p-3 rounded overflow-x-auto"' + result.substring(4);
     }
-
-    /**
-     * @param {string} text
-     */
-    // paragraph(text) {
-    //     if (text.startsWith('```')) {
-    //         return this.resolveCodeBlock(text);
-    //     }
-    //     text = text.replace(/ /g, `\u00A0`);
-    //     const rows = text.split('\n');
-    //     let result = '';
-    //     for (const row of rows) {
-    //         result += row !== '' ? `<p class="break-words">${row}</p>` : `<br />`;
-    //     }
-    //     return result;
-    // }
-
-    /**
-     * @param {string} text
-     */
-    text(text) {
-        return text.startsWith('```') ? this.resolveCodeBlock(text) : text;
-    }
-
-    /**
-     * @param {string} text
-     */
-    resolveCodeBlock(text) {
-        text = text.substring(text.indexOf('\n') + 1);
-        text = text.replace(/&amp;/g, '&');
-        text = text.replace(/&lt;/g, '<');
-        text = text.replace(/&gt;/g, '>');
-        text = text.replace(/&nbsp;/g, ' ');
-        text = text.replace(/'/g, "'");
-        text = text.replace(/&quot;/g, '"');
-        return this.code(text, undefined, true);
-    }
 }
 
 // markdown解析设置
 marked.setOptions({
     renderer: new HljsRenderer(),
-    highlight: (code) => hljs.highlightAuto(code).value
+    highlight: (code) => hljs.highlightAuto(code).value,
+    breaks: true
 });
 
 /**
