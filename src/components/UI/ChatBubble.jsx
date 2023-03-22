@@ -9,9 +9,11 @@ class HljsRenderer extends marked.Renderer {
     code(code, language, isEscaped) {
         /** @type {string} */
         let result = super.code.call(this, code, language, isEscaped);
-        return (
-            result.substring(0, 4) + ' class="hljs p-3 rounded overflow-x-auto"' + result.substring(4)
-        );
+        return result.substring(0, 4) + ' class="hljs p-3 rounded overflow-x-auto"' + result.substring(4);
+    }
+
+    paragraph(text) {
+        return `<pre class="hljs p-3 rounded overflow-x-auto">${text}</pre>`;
     }
 
     text(text) {
