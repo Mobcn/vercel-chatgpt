@@ -10,7 +10,7 @@ class HljsRenderer extends marked.Renderer {
         /** @type {string} */
         let result = super.code.call(this, code, language, isEscaped);
         return (
-            result.substring(0, 4) + ' class="hljs" style="padding: 12px; border-radius: 4px;"' + result.substring(4)
+            result.substring(0, 4) + ' class="hljs p-3 rounded overflow-x-auto"' + result.substring(4)
         );
     }
 
