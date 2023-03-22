@@ -28,7 +28,7 @@ class HljsRenderer extends marked.Renderer {
 // markdown解析设置
 marked.setOptions({
     renderer: new HljsRenderer(),
-    highlight: (code) => hljs.highlightAuto(code).value,
+    highlight: (code, lang) => (lang ? hljs.highlight(code, { language: lang }).value : hljs.highlightAuto(code).value),
     breaks: true
 });
 
