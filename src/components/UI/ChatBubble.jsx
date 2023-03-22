@@ -21,11 +21,14 @@ class HljsRenderer extends marked.Renderer {
      * @param {string} text
      */
     paragraph(text) {
+        if (text.startsWith('```')) {
+            return this.resolveCodeBlock(text);
+        }
         text = text.replace(/ /g, `\u00A0`);
         const rows = text.split('\n');
         let result = '';
         for (const row of rows) {
-            result += row !== '' ? `<p>${row}</p>` : `<br />`;
+            result += row !== '' ? `<p class="break-words">${row}</p>` : `<br />`;
         }
         return result;
     }
@@ -34,17 +37,21 @@ class HljsRenderer extends marked.Renderer {
      * @param {string} text
      */
     text(text) {
-        if (text.startsWith('```')) {
-            text = text.substring(text.indexOf('\n') + 1);
-            text = text.replace(/&amp;/g, '&');
-            text = text.replace(/&lt;/g, '<');
-            text = text.replace(/&gt;/g, '>');
-            text = text.replace(/&nbsp;/g, ' ');
-            text = text.replace(/'/g, "'");
-            text = text.replace(/&quot;/g, '"');
-            return this.code(text, undefined, true);
-        }
-        return text;
+        return text.startsWith('```') ? this.resolveCodeBlock(text) : text;
+    }
+
+    /**
+     * @param {string} text
+     */
+    resolveCodeBlock(text) {
+        text = text.substring(text.indexOf('\n') + 1);
+        text = text.replace(/&amp;/g, '&');
+        text = text.replace(/&lt;/g, '<');
+        text = text.replace(/&gt;/g, '>');
+        text = text.replace(/&nbsp;/g, ' ');
+        text = text.replace(/'/g, "'");
+        text = text.replace(/&quot;/g, '"');
+        return this.code(text, undefined, true);
     }
 }
 
