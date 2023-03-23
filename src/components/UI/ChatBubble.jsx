@@ -1,5 +1,6 @@
 import { createEffect } from 'solid-js';
 import { marked } from 'marked';
+import markedKatex from 'marked-katex-extension';
 import hljs from 'highlight.js';
 
 /**
@@ -18,6 +19,8 @@ class HljsRenderer extends marked.Renderer {
     }
 }
 
+// 使用latex解析
+marked.use(markedKatex({ throwOnError: false }));
 // markdown解析设置
 marked.setOptions({
     renderer: new HljsRenderer(),
