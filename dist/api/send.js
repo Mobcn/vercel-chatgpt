@@ -1,9 +1,9 @@
 import { createParser } from '../utils/eventsource-parser@0.1.0.js';
 
 /** ChatGPT接口地址 */
-const CHAT_API = 'https://api.openai.com/v1/chat/completions';
+const CHAT_API = 'https://api.siliconflow.cn/v1/chat/completions';
 /** 使用模型 */
-const MODEL = 'gpt-3.5-turbo';
+const MODEL = 'deepseek-ai/DeepSeek-V3';
 /** 思维发散度（0 ~ 2） */
 const TEMPERATURE = 0.7;
 
