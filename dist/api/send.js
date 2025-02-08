@@ -10,7 +10,7 @@ const TEMPERATURE = 0.7;
 // 使用 Edge Function
 export const config = {
     runtime: 'edge',
-    regions: ['iad1']
+    regions: ['hkg1']
 };
 
 /**
